@@ -1,0 +1,98 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - bigdata-net
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - bigdata-net
+
+  airflow-webserver:
+    image: apache/airflow:2.7.1
+    depends_on: [postgres, redis, airflow-init]
+    environment:
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
+      AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
+    volumes:
+      - airflow_data:/opt/airflow
+      - ./dags:/opt/airflow/dags
+    command: webserver
+    ports:
+      - "8083:8080" #  UI → http://localhost:8083
+    networks:
+      - bigdata-net
+
+  airflow-scheduler:
+    image: apache/airflow:2.7.1
+    depends_on: [postgres, redis, airflow-init]
+    environment:
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
+      AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
+    volumes:
+      - airflow_data:/opt/airflow
+      - ./dags:/opt/airflow/dags
+    command: scheduler
+    networks:
+      - bigdata-net
+
+  airflow-worker:
+    image: apache/airflow:2.7.1
+    depends_on: [postgres, redis, airflow-init]
+    environment:
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
+      AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
+    volumes:
+      - airflow_data:/opt/airflow
+      - ./dags:/opt/airflow/dags
+    command: celery worker
+    networks:
+      - bigdata-net
+
+  airflow-init: # הרצת  Airflow DB init  פעם אחת
+    image: apache/airflow:2.7.1
+    depends_on: [postgres]
+    environment:
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    entrypoint: /bin/bash
+    command: -c "airflow db upgrade"
+    networks:
+      - bigdata-net
+
+  flower:
+    image: apache/airflow:2.7.1
+    depends_on: [redis, airflow-webserver]
+    environment:
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
+    command: celery flower
+    ports:
+      - "5555:5555" #  Flower UI → http://localhost:5555
+    networks:
+      - bigdata-net
+
+volumes:
+  airflow_data:
+  postgres_data:
+
+networks:
+  bigdata-net:
+    external: true
