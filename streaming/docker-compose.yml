@@ -3,24 +3,27 @@ version: "3.8"
 services:
   zookeeper:
     image: wurstmeister/zookeeper:latest
-    ports:
-      - "2181:2181"
-    networks:
-      - bigdata-net
+    ports: ["2181:2181"]
+    networks: [bigdata-net]
 
   kafka:
     image: wurstmeister/kafka:latest
-    depends_on:
-      - zookeeper
+    depends_on: [zookeeper]
     environment:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092 # חשוב!
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-    ports:
-      - "9092:9092"
-    networks:
-      - bigdata-net
+    ports: ["9092:9092"]
+    networks: [bigdata-net]
+
+  producer:
+    build: ./producer
+    depends_on: [kafka]
+    environment:
+      KAFKA_BOOTSTRAP: kafka:9092
+      KAFKA_TOPIC: raw_users
+    networks: [bigdata-net]
 
 networks:
   bigdata-net:
