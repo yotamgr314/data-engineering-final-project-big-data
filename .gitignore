@@ -1,0 +1,8 @@
+/processing/data/minio/
+/processing/data/
+/data/
+/**/.minio.sys/
+/**/.trash/
+/**/xl.meta*
+__pycache__/
+*.py[cod]
