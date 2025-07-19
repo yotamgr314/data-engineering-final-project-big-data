@@ -1,0 +1,132 @@
+---
+config:
+  theme: dark
+---
+erDiagram
+    SILVER_FLIGHTS {
+        string flight_id PK
+        string routes_id FK
+        int possible_passenger_amount
+        int possible_luggage_weight
+        date flight_date
+        datetime scheduled_departure
+        datetime scheduled_arrival
+        timestamp ingestion_time
+    }
+    SILVER_ROUTES {
+        string routes_id PK
+        string airport_origin
+        string airport_destination
+        double latitude_origin
+        double longitude_origin
+        double latitude_destination
+        double longitude_destination
+        float distance_km
+        timestamp ingestion_time
+    }
+    SILVER_WAYPOINT_SAMPLING_WEATHER_POINTS {
+        string route_id FK
+        int way_point_number
+        double point_latitude
+        double point_longitude
+        double point_height
+        timestamp ingestion_time
+    }
+    SILVER_TICKET_PRICES {
+        string price_id PK
+        string silver_flight_id FK
+        decimal ticket_price
+        decimal luggage_fee
+        ENUM ticket_class
+        date start_date
+        date end_date
+        boolean actual
+        timestamp ingestion_time
+    }
+    SILVER_CUSTOMERS {
+        string customer_passport_id PK
+        string customer_first_name
+        string customer_last_name
+        string customer_nationality
+        string customer_email
+        string customer_membership_tier
+        date customer_date_of_birth
+        timestamp ingestion_time
+    }
+    SILVER_FLIGHT_WEATHER {
+        string weather_sample_id PK
+        string silver_flight_id FK
+        int waypoint_sampling_number FK
+        ENUM weather_condition 
+        double temperature
+        double humidity
+        double wind_speed
+        double wind_direction
+        date sample_for_date
+        timestamp ingestion_time
+    }
+    SILVER_BOOKED_TICKETS {
+        string booked_ticket_id PK
+        string customer_passport_id FK
+        ENUM ticket_class
+        date booking_date
+        timestamp ingestion_time
+    }
+    SILVER_FLIGHTS_EVENTS {
+        string flight_event_id PK
+        string flight_id FK
+        string event_type
+        ENUM delay_reason
+        datetime event_time
+        timestamp ingestion_time
+    }
+    SILVER_BOARDING_SUMMARY {
+        string flight_id PK
+        int passenger_count
+        int baggage_count
+        decimal total_baggage_weight
+        float avg_baggage_per_passenger
+        float avg_baggage_weight
+        date boarding_date
+        timestamp ingestion_time
+    }
+    SILVER_AGG_FREQUENT_DELAY_REASONS {
+        string delay_id PK
+        string silver_flight_event FK
+        int total_occurences
+        timestamp ingestion_time
+    }
+    SILVER_WEATHER_SUMMARY {
+        string flight_id PK
+        decimal average_temperature
+        decimal average_humidity
+        decimal average_wind_speed
+        decimal average_wind_direction
+        string majority_weather_condition
+        timestamp ingestion_time
+    }
+    SILVER_TICKET_EVENTS {
+        string event_id PK
+        string booked_ticket_id FK
+        string event_type
+        timestamp event_time
+        timestamp ingestion_time
+    }
+    SILVER_AGG_CANCELATION_RATE {
+        int total_booking
+        int total_cancelation
+        float cancelation_rate
+        timestamp ingestion_time
+    }
+    SILVER_FLIGHTS ||--o{ SILVER_FLIGHTS_EVENTS : has
+    SILVER_FLIGHTS ||--o{ SILVER_TICKET_PRICES : has
+    SILVER_FLIGHTS ||--o{ SILVER_FLIGHT_WEATHER : has
+    SILVER_FLIGHTS ||--o{ SILVER_BOARDING_SUMMARY : has
+    SILVER_FLIGHTS ||--o{ SILVER_WEATHER_SUMMARY : has
+    SILVER_ROUTES ||--o{ SILVER_FLIGHTS : defines
+    SILVER_ROUTES ||--o{ SILVER_WAYPOINT_SAMPLING_WEATHER_POINTS : contains
+    SILVER_BOOKED_TICKETS ||--o{ SILVER_TICKET_EVENTS : triggers
+    SILVER_CUSTOMERS ||--o{ SILVER_BOOKED_TICKETS : books
+    SILVER_FLIGHTS_EVENTS ||--o{ SILVER_AGG_FREQUENT_DELAY_REASONS : summarized_by
+    SILVER_WAYPOINT_SAMPLING_WEATHER_POINTS ||--o{ SILVER_FLIGHT_WEATHER : linked_by
+    SILVER_AGG_CANCELATION_RATE ||--o{ SILVER_TICKET_EVENTS : summarized_by
