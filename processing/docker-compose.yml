@@ -21,7 +21,7 @@ services:
       - SPARK_MASTER_PORT=7077
     ports: ["7077:7077", "8080:8080"]
     volumes:
-      - ./jobs:/opt/bitnami/spark/jobs
+      - ./processing/jobs:/opt/bitnami/spark/jobs
     networks: [bigdata-net]
 
   spark-worker:
@@ -32,7 +32,7 @@ services:
       - SPARK_MODE=worker
       - SPARK_MASTER=spark://spark-master:7077
     volumes:
-      - ./jobs:/opt/bitnami/spark/jobs
+      - ./processing/jobs:/opt/bitnami/spark/jobs
     networks: [bigdata-net]
 
 networks:
