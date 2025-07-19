@@ -1,0 +1,97 @@
+---
+config:
+  theme: dark
+---
+erDiagram
+    BRONZE_ROUTES_RAW {
+        string routes_id PK
+        string airport_origin
+        string airport_destination
+        double latitude_origin
+        double longitude_origin
+        double latitude_destination
+        double longitude_destination
+        float distance_km
+    }
+    BRONZE_FLIGHTS {
+        string flight_id PK
+        string routes_id
+        int max_passenger_capacity
+	    int max_luggage_weight_capacity
+        timestamp scheduled_arrival
+        timestamp scheduled_departure
+    }
+    BRONZE_TICKET_PRICES { 
+        string price_id PK
+        string flight_id
+        ENUM ticket_class
+        decimal price
+        decimal luggage_fee
+        date start_date
+        date end_date
+        boolean actual
+    }
+    BRONZE_BOOKED_TICKETS_RAW {
+        string booked_ticket_id PK
+        string passenger_passport_id
+        string passenger_first_name
+        string passenger_last_name
+        string passenger_nationality
+        string passenger_email
+        string order_method
+        date date_of_birth
+        date booking_date
+        float ticket_price
+        ENUM ticket_class
+        ENUM luggage_class
+    }
+    BRONZE_FLIGHT_WEATHER_RAW_API {
+        string weather_sample_id PK
+	    double latitude
+        double longitude
+	    double height
+        double temperature
+        double humidity
+        double wind_speed
+        double wind_direction
+        ENUM current_weather_condition
+        timestamp sample_for_date
+    }
+    BRONZE_REGISTERED_CUSTOMERS {
+        string customer_passport_id PK
+        string customer_first_name
+        string customer_last_name
+        string customer_nationality
+        string customer_email
+        date customer_date_of_birth
+        ENUM customer_membership_tier
+    }
+    BRONZE_ROUTE_WEATHER_POINTS {
+        string route_id FK
+        int way_point_number
+        double latitude
+        double longitude
+        double height
+    }
+    BRONZE_BOARDING_EVENTS_RAW {
+        string event_id PK
+        string flight_id
+        string event_type
+        string passenger_id
+        decimal baggage_weight
+        timestamp event_time
+        timestamp ingestion_time
+    }
+    BRONZE_FLIGHT_EVENTS_RAW {
+        string event_id PK
+        string flight_id
+        string event_type 
+        ENUM delay_reason
+        timestamp event_time
+    }
+    BRONZE_TICKET_EVENTS_RAW {
+        string event_id PK
+        string booked_ticket_id
+        string event_type
+        timestamp event_time
+    }
