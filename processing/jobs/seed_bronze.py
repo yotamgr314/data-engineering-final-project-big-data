@@ -7,6 +7,8 @@ from pyspark.sql.types import (
     StringType, IntegerType, DoubleType, FloatType,
     BooleanType, DateType, TimestampType, DecimalType
 )
+from decimal import Decimal
+
 
 fake = Faker()
 
@@ -35,7 +37,6 @@ def create_table(name: str, schema: StructType, rows=None):
         print(f"❌ Failed to create {name}: {e}")
 
 def generate_rows_for_table(schema: StructType, num_rows=10):
-    """Generates fake data rows based on schema"""
     rows = []
     for _ in range(num_rows):
         row = []
@@ -56,7 +57,7 @@ def generate_rows_for_table(schema: StructType, num_rows=10):
             elif isinstance(dtype, TimestampType):
                 row.append(fake.date_time_this_year())
             elif isinstance(dtype, DecimalType):
-                row.append(round(random.uniform(1.0, 100.0), 2))
+                row.append(Decimal(round(random.uniform(1.0, 100.0), 2)))  # המרת float ל-Decimal
             else:
                 row.append(None)
         rows.append(tuple(row))
@@ -160,7 +161,7 @@ tables = [
             StructField("event_type", StringType(), False),
             StructField("event_time", TimestampType(), False),
             StructField("passenger_id", StringType(), True),
-            StructField("baggage_weight", DecimalType(10,2), True),
+            StructField("baggage_weight", DecimalType(10, 2), True),  # שני ספרות אחרי הנקודה
             StructField("ingestion_time", TimestampType(), False),
         ])
     },
