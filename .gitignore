@@ -1,0 +1,3 @@
+# Ignore all MinIO data, metadata and temp files
+processing/data/minio/
+!processing/data/minio/.gitkeep
