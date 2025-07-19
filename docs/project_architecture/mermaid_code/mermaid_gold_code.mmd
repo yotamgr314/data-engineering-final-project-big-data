@@ -1,0 +1,98 @@
+---
+config:
+  theme: dark
+---
+erDiagram
+    GOLD_DIM_MONTHLY_DELAYS {
+        string delays_id PK
+        string most_frequent_delay
+        double average_delay
+        double minimal_delay
+        double maximal_delay
+        timestamp ingestion_time
+    }
+    GOLD_DIM_MONTHLY_FLIGHT_INFO {
+        string flights_info_id PK
+        int total_flights
+        int total_passengers_number
+        double average_passengers_number_on_flight
+        timestamp ingestion_time
+    }
+    GOLD_DIM_MONTHLY_REVENUE {
+        string revenue_id PK
+        string max_revenue_class
+        double total_revenue
+        double revenue_per_passenger
+        double average_ticket_price
+        float cancelation_rate
+        timestamp ingestion_time
+    }
+    GOLD_DIM_MONTHLY_MOST_POPULAR {
+        string metrics_id PK
+        string most_popular_origin
+        string most_popular_destination
+        string most_popular_order_method
+        timestamp ingestion_time
+    }
+    GOLD_FACT_MONTHLY_PERFORMANCE_REPORT {
+        string report_id PK
+        string revenue_id FK
+        string flights_info_id FK
+        string metrics_id FK
+        string delays_id FK
+        int year
+        int month
+        timestamp ingestion_time
+    }
+    GOLD_MONTHLY_AGGREGATES {
+        string aggregate_id PK
+        int year
+        int month
+        int total_flights
+        double total_revenue
+        double average_delay
+        string most_popular_destination
+        string most_popular_order_method
+        timestamp ingestion_time
+    }
+    GOLD_DIM_ML_ROUTES {
+        string route_id PK
+        string airport_origin
+        string airport_destination
+        double time_of_flight
+        double distance_km
+        timestamp ingestion_time
+    }
+    GOLD_DIM_ML_WEATHER {
+        string weather_id PK
+        string majority_weather_condition
+        int number_of_most_common_condition
+        double average_height
+        double average_temperature
+        double average_humidity
+        double average_wind_speed
+        double average_wind_direction
+        timestamp ingestion_time
+    }
+    GOLD_DIM_ML_BOARDING_DATA {
+        string boarding_data_id PK
+        int max_passenger_capacity
+        int max_luggage_weight_capacity
+        timestamp ingestion_time
+    }
+    GOLD_FACT_ML_TRAINING {
+        string training_set_id PK
+        string weather_id FK
+        string route_id FK
+        string boarding_data_id FK
+        double delay_in_minutes
+        timestamp ingestion_time
+    }
+    GOLD_DIM_MONTHLY_REVENUE ||--o{ GOLD_FACT_MONTHLY_PERFORMANCE_REPORT : has
+    GOLD_DIM_MONTHLY_FLIGHT_INFO ||--o{ GOLD_FACT_MONTHLY_PERFORMANCE_REPORT : has
+    GOLD_DIM_MONTHLY_MOST_POPULAR ||--o{ GOLD_FACT_MONTHLY_PERFORMANCE_REPORT : has
+    GOLD_DIM_MONTHLY_DELAYS ||--o{ GOLD_FACT_MONTHLY_PERFORMANCE_REPORT : has
+    GOLD_FACT_MONTHLY_PERFORMANCE_REPORT ||--o{ GOLD_MONTHLY_AGGREGATES : aggregated_into
+    GOLD_DIM_ML_ROUTES ||--o{ GOLD_FACT_ML_TRAINING : used_in
+    GOLD_DIM_ML_WEATHER ||--o{ GOLD_FACT_ML_TRAINING : uses
+    GOLD_DIM_ML_BOARDING_DATA ||--o{ GOLD_FACT_ML_TRAINING : boards
