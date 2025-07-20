@@ -11,7 +11,7 @@ default_args = {
 with DAG(
     dag_id="ml_block_etl",
     default_args=default_args,
-    schedule_interval=@daily,
+    schedule_interval="@daily",
     catchup=False,
     description="ETL for Machine Learning Tables of GOLD layer",
     tags=["ml", "gold", "iceberg"]
