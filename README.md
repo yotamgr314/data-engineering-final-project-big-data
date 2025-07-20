@@ -184,7 +184,3 @@ Tables cover all 3 layers: `bronze`, `silver`, `gold`.
 * Special thanks to the **Big Data Engineering Course Team**
 
 ---
-
-##  License
-
-MIT License — see `LICENSE` file.
