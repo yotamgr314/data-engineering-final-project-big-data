@@ -1,27 +1,15 @@
+import os
 from datetime import timedelta
 from airflow import DAG
 from airflow.providers.docker.operators.docker import DockerOperator
 from airflow.utils.dates import days_ago
 from docker.types import Mount
 
-from pyspark.sql import SparkSession
+RELATIVE_JOB_PATH = "../processing/jobs"
+HOST_JOB_DIR = "/mnt/c/Miri/data-engineering-final-project-big-data/processing/jobs"
 
-# הגדרת Spark עם חיבור ל‑MinIO
-spark = SparkSession.builder \
-    .appName("YourAppName") \
-    .config("spark.hadoop.fs.s3a.endpoint", "http://minio:9000") \
-    .config("spark.hadoop.fs.s3a.access.key", "minioadmin") \
-    .config("spark.hadoop.fs.s3a.secret.key", "minioadmin") \
-    .config("spark.hadoop.fs.s3a.path.style.access", "true") \
-    .getOrCreate()
+DOCKER_SOCK = "/var/run/docker.sock"
 
-# בתוך קונטיינר ה‑Airflow יש לנו:
-#   - את הסקריפטים ב־/opt/bitnami/spark/jobs
-#   - את ה‑docker.sock ב־/var/run/docker.sock
-HOST_JOB_DIR = "/opt/bitnami/spark/jobs"
-DOCKER_SOCK   = "/var/run/docker.sock"
-
-# MinIO credentials (ברירת מחדל של bitnami/minio)
 MINIO_ACCESS_KEY = "minioadmin"
 MINIO_SECRET_KEY = "minioadmin"
 MINIO_ENDPOINT   = "http://minio:9000"
@@ -41,27 +29,25 @@ with DAG(
     catchup=False,
 ) as dag:
 
-    # מיפוי תיקיית הסקריפטים ו‑docker.sock
     mounts = [
         Mount(source=HOST_JOB_DIR, target="/opt/bitnami/spark/jobs", type="bind"),
-        Mount(source=DOCKER_SOCK,   target=DOCKER_SOCK,           type="bind"),
+        Mount(source=DOCKER_SOCK, target=DOCKER_SOCK, type="bind"),
     ]
 
-    # env vars to let Spark / Hadoop fs.s3a connect to MinIO
     env_vars = {
         "AWS_ACCESS_KEY_ID":     MINIO_ACCESS_KEY,
         "AWS_SECRET_ACCESS_KEY": MINIO_SECRET_KEY,
-        # many Spark/Hadoop libs also respect AWS_ENDPOINT_URL
         "AWS_ENDPOINT_URL":      MINIO_ENDPOINT,
-        # לשימוש ב‑path style מול MinIO
         "S3A_USE_PATH_STYLE_ENDPOINT": "true",
     }
+
 
     def make_job(task_id, script_name):
         return DockerOperator(
             task_id=task_id,
             image="spark-custom:3.3",
             command=f"python /opt/bitnami/spark/jobs/{script_name}.py",
+            working_dir="/opt/bitnami/spark/jobs",
             environment=env_vars,
             mounts=mounts,
             docker_url="unix:///var/run/docker.sock",
@@ -69,7 +55,6 @@ with DAG(
             auto_remove=True,
         )
 
-    # הגדרת משימות ETL
     etl_silver_routes            = make_job("etl_silver_routes",            "silver_etl_routes")
     etl_silver_flights           = make_job("etl_silver_flights",           "silver_etl_flights")
     etl_silver_ticket_prices     = make_job("etl_silver_ticket_prices",     "silver_etl_ticket_prices")
@@ -77,7 +62,6 @@ with DAG(
     etl_silver_flight_events     = make_job("etl_silver_flight_events",     "silver_etl_flight_events")
     etl_silver_boarding_summary  = make_job("etl_silver_boarding_summary",  "silver_etl_boarding_summary")
 
-    # הגדרת התלותות ביניהם
     (
         etl_silver_routes
         >> etl_silver_flights
