@@ -1,7 +1,3 @@
-"""
-Simple schema validation for Bronze tables.
-Exits with code !=0 on failure (so Airflow marks task as failed).
-"""
 import sys
 from pyspark.sql import SparkSession
 
@@ -10,10 +6,10 @@ spark = (
     .config("spark.sql.catalog.minio", "org.apache.iceberg.spark.SparkCatalog")
     .config("spark.sql.catalog.minio.catalog-impl", "org.apache.iceberg.hadoop.HadoopCatalog")
     .config("spark.sql.catalog.minio.warehouse", "s3a://bronze")
-    .config("spark.hadoop.fs.s3a.endpoint", "http://minio:9000")
-    .config("spark.hadoop.fs.s3a.access.key", "minioadmin")
-    .config("spark.hadoop.fs.s3a.secret.key", "minioadmin")
-    .config("spark.hadoop.fs.s3a.path.style.access", "true")
+    .config("spark.hadoop.fs.s3a.endpoint", "http://minio:9000")  # הגדרת ה‑endpoint של MinIO
+    .config("spark.hadoop.fs.s3a.access.key", "minioadmin")  # הגדרת המפתח
+    .config("spark.hadoop.fs.s3a.secret.key", "minioadmin")  # הגדרת הסוד
+    .config("spark.hadoop.fs.s3a.path.style.access", "true")  # הגדרת שימוש ב‑path style
     .getOrCreate()
 )
 

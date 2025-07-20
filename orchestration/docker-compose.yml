@@ -20,7 +20,8 @@ services:
       - bigdata-net
 
   airflow-webserver:
-    image: apache/airflow:2.7.1
+    build: . # וודא שהשירות הזה בונה את התמונה המקומית
+    user: root
     depends_on: [postgres, redis, airflow-init]
     environment:
       AIRFLOW__CORE__EXECUTOR: CeleryExecutor
@@ -30,6 +31,8 @@ services:
     volumes:
       - airflow_data:/opt/airflow
       - ./dags:/opt/airflow/dags
+      - ../processing/jobs:/opt/bitnami/spark/jobs # ← תיקיית הסקריפטים שלכם
+      - /var/run/docker.sock:/var/run/docker.sock # ← מיפוי ה‑docker daemon
     command: webserver
     ports:
       - "8083:8080" #  UI → http://localhost:8083
@@ -47,12 +50,15 @@ services:
     volumes:
       - airflow_data:/opt/airflow
       - ./dags:/opt/airflow/dags
+      - ../processing/jobs:/opt/bitnami/spark/jobs
+      - /var/run/docker.sock:/var/run/docker.sock
     command: scheduler
     networks:
       - bigdata-net
 
   airflow-worker:
     image: apache/airflow:2.7.1
+    user: root # ← הוסיפו את השורה הזו
     depends_on: [postgres, redis, airflow-init]
     environment:
       AIRFLOW__CORE__EXECUTOR: CeleryExecutor
@@ -62,9 +68,13 @@ services:
     volumes:
       - airflow_data:/opt/airflow
       - ./dags:/opt/airflow/dags
-    command: celery worker
+      - ../processing/jobs:/opt/bitnami/spark/jobs
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: >
+      bash -c "rm -f /opt/airflow/airflow-worker.pid && exec airflow celery worker"
     networks:
       - bigdata-net
+    restart: on-failure
 
   airflow-init: # הרצת  Airflow DB init  פעם אחת
     image: apache/airflow:2.7.1
