@@ -20,3 +20,5 @@ cd ..
 
 echo "All components started successfully!"
 echo "Spark Master : http://localhost:8080/"
+echo "MinIO : http://localhost:9001/"
+echo "Airflow : http://localhost:8083/"
