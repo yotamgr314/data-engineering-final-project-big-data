@@ -1,7 +1,17 @@
+import os
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, count, sum, avg
 
-spark = SparkSession.builder.appName("silver_etl_boarding_summary").getOrCreate()
+# הגדרת Spark עם חיבור ל‑MinIO
+spark = (
+    SparkSession.builder
+        .appName("silver_etl_boarding_summary")
+        .config("spark.hadoop.fs.s3a.access.key", "minioadmin")  # הגדרת המפתח
+        .config("spark.hadoop.fs.s3a.secret.key", "minioadmin")  # הגדרת הסוד
+        .config("spark.hadoop.fs.s3a.endpoint", "http://minio:9000")  # הגדרת ה‑endpoint של MinIO
+        .config("spark.hadoop.fs.s3a.path.style.access", "true")  # הגדרת שימוש ב‑path style
+        .getOrCreate()
+)
 
 # Load the Bronze data
 bronze_boarding_events_df = spark.read.format("iceberg").load("s3a://bronze/bronze_boarding_events_raw")
