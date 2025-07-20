@@ -5,8 +5,9 @@ from airflow.providers.docker.operators.docker import DockerOperator
 from airflow.utils.dates import days_ago
 from docker.types import Mount
 
-RELATIVE_JOB_PATH = "../processing/jobs"
-HOST_JOB_DIR = "/mnt/c/Miri/data-engineering-final-project-big-data/processing/jobs"
+# חישוב דינמי של נתיב jobs מתוך מיקום הקובץ
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+HOST_JOB_DIR = os.environ.get("HOST_JOB_DIR", os.path.join(PROJECT_ROOT, "processing", "jobs"))
 
 DOCKER_SOCK = "/var/run/docker.sock"
 
@@ -40,7 +41,6 @@ with DAG(
         "AWS_ENDPOINT_URL":      MINIO_ENDPOINT,
         "S3A_USE_PATH_STYLE_ENDPOINT": "true",
     }
-
 
     def make_job(task_id, script_name):
         return DockerOperator(
