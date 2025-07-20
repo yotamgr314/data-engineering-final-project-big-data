@@ -20,7 +20,7 @@ services:
       - bigdata-net
 
   airflow-webserver:
-    build: . # וודא שהשירות הזה בונה את התמונה המקומית
+    build: .   
     user: root
     depends_on: [postgres, redis, airflow-init]
     environment:
@@ -32,11 +32,11 @@ services:
       - airflow_data:/opt/airflow
       - ./dags:/opt/airflow/dags
       - ../processing/jobs:/opt/bitnami/spark/jobs
-      - ../processing/jobs:/opt/airflow/jobs # ← תיקיית הסקריפטים שלכם
-      - /var/run/docker.sock:/var/run/docker.sock # ← מיפוי ה‑docker daemon
+      - ../processing/jobs:/opt/airflow/jobs
+      - /var/run/docker.sock:/var/run/docker.sock
     command: webserver
     ports:
-      - "8083:8080" #  UI → http://localhost:8083
+      - "8083:8080"
     networks:
       - bigdata-net
 
@@ -60,7 +60,7 @@ services:
 
   airflow-worker:
     image: apache/airflow:2.7.1
-    user: root # ← הוסיפו את השורה הזו
+    user: root
     depends_on: [postgres, redis, airflow-init]
     environment:
       AIRFLOW__CORE__EXECUTOR: CeleryExecutor
@@ -79,7 +79,7 @@ services:
       - bigdata-net
     restart: on-failure
 
-  airflow-init: # הרצת  Airflow DB init  פעם אחת
+  airflow-init:
     image: apache/airflow:2.7.1
     depends_on: [postgres]
     environment:
@@ -98,7 +98,7 @@ services:
       AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
     command: celery flower
     ports:
-      - "5555:5555" #  Flower UI → http://localhost:5555
+      - "5555:5555"
     networks:
       - bigdata-net
 

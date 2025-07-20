@@ -13,8 +13,8 @@ services:
     networks: [bigdata-net]
 
   spark-master:
-    build: . # ← יבנה את Dockerfile
-    image: spark-custom:3.3 # תג מקומי
+    build: .
+    image: spark-custom:3.3 
     environment:
       - SPARK_MODE=master
       - SPARK_MASTER_HOST=spark-master
@@ -26,7 +26,7 @@ services:
 
   spark-worker:
     image: spark-custom:3.3
-    build: . # ← חשוב! גם כאן build כדי להיות בטוחים
+    build: .
     depends_on: [spark-master]
     environment:
       - SPARK_MODE=worker

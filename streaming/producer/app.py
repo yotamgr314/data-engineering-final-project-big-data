@@ -12,7 +12,6 @@ prod  = KafkaProducer(bootstrap_servers=BOOTSTRAP,
 
 def gen_event():
     now = datetime.utcnow()
-    # מדמה latency אקראית 0‑48 שעות
     event_time = now - timedelta(hours=random.randint(0, 48))
     return {
         "event_ts": event_time.isoformat(timespec="seconds") + "Z",

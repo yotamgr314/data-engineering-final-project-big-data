@@ -32,9 +32,9 @@ def create_table(name: str, schema: StructType, rows=None):
         df.writeTo(f"minio.{name}") \
             .tableProperty("format-version", "2") \
             .createOrReplace()
-        print(f"✅ created {name}")
+        print(f"Created {name}")
     except Exception as e:
-        print(f"❌ Failed to create {name}: {e}")
+        print(f"Failed to create {name}: {e}")
 
 def generate_rows_for_table(schema: StructType, num_rows=10):
     rows = []
@@ -57,13 +57,12 @@ def generate_rows_for_table(schema: StructType, num_rows=10):
             elif isinstance(dtype, TimestampType):
                 row.append(fake.date_time_this_year())
             elif isinstance(dtype, DecimalType):
-                row.append(Decimal(round(random.uniform(1.0, 100.0), 2)))  # המרת float ל-Decimal
+                row.append(Decimal(round(random.uniform(1.0, 100.0), 2)))
             else:
                 row.append(None)
         rows.append(tuple(row))
     return rows
 
-# הגדרת הטבלאות
 tables = [
     {
         "name": "bronze_static_routes_raw",
@@ -78,14 +77,12 @@ tables = [
             StructField("distance_km", FloatType(), False),
         ])
     },
-    # טבלאות נוספות...
 ]
 
-# ריצה ליצירת כל הטבלאות עם נתונים דמיוניים (10 שורות כל טבלה)
 for table in tables:
     schema = table["schema"]
     name = table["name"]
-    rows = generate_rows_for_table(schema, num_rows=10)  # הפחתתי את מספר השורות ל-10
+    rows = generate_rows_for_table(schema, num_rows=10)
     create_table(name, schema, rows)
 
-print("🎉  כל הטבלאות נוצרו והוגדרו בהצלחה עם נתונים דמיוניים!")
+print("All tables successfuly created!")

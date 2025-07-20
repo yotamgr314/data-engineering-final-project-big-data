@@ -8,11 +8,11 @@ spark = (
     SparkSession.builder.appName("bronze_to_silver_batch")
     .config("spark.sql.catalog.minio", "org.apache.iceberg.spark.SparkCatalog")
     .config("spark.sql.catalog.minio.catalog-impl", "org.apache.iceberg.hadoop.HadoopCatalog")
-    .config("spark.sql.catalog.minio.warehouse", "s3a://bronze")  # הגדרת מחסן עבור ה‑Bronze
-    .config("spark.hadoop.fs.s3a.endpoint", "http://minio:9000")  # הגדרת ה‑endpoint של MinIO
-    .config("spark.hadoop.fs.s3a.access.key", "minioadmin")  # הגדרת המפתח
-    .config("spark.hadoop.fs.s3a.secret.key", "minioadmin")  # הגדרת הסוד
-    .config("spark.hadoop.fs.s3a.path.style.access", "true")  # הגדרת שימוש ב‑path style
+    .config("spark.sql.catalog.minio.warehouse", "s3a://bronze")
+    .config("spark.hadoop.fs.s3a.endpoint", "http://minio:9000")
+    .config("spark.hadoop.fs.s3a.access.key", "minioadmin")
+    .config("spark.hadoop.fs.s3a.secret.key", "minioadmin")
+    .config("spark.hadoop.fs.s3a.path.style.access", "true")
     .getOrCreate()
 )
 

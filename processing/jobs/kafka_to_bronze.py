@@ -19,7 +19,7 @@ spark = (
     SparkSession.builder.appName("kafka_to_bronze")
     .config("spark.sql.catalog.minio", "org.apache.iceberg.spark.SparkCatalog")
     .config("spark.sql.catalog.minio.catalog-impl", "org.apache.iceberg.hadoop.HadoopCatalog")
-    .config("spark.sql.catalog.minio.warehouse", "s3a://bronze")     # כל שכבות Iceberg באותו catalog
+    .config("spark.sql.catalog.minio.warehouse", "s3a://bronze")
     .config("spark.hadoop.fs.s3a.endpoint", "http://minio:9000")
     .config("spark.hadoop.fs.s3a.access.key", "minioadmin")
     .config("spark.hadoop.fs.s3a.secret.key", "minioadmin")
@@ -48,7 +48,7 @@ qry = (
     .format("iceberg")
     .outputMode("append")
     .option("checkpointLocation", "s3a://bronze/_checkpoints/kafka_raw")
-    .option("path", BRONZE_PATH)        # Iceberg טבלה מנוהלת
+    .option("path", BRONZE_PATH)
     .trigger(processingTime="30 seconds")
     .start()
 )
