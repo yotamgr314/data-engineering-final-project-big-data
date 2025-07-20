@@ -1,3 +1,8 @@
 processing/data/minio/
 !processing/data/minio/.gitkeep
 __pycache__/
+*.meta
+*.bkp
+*.bin
+orchestration/data/minio/.minio.sys/format.json
+/orchestration/data/minio/.minio.sys/tmp

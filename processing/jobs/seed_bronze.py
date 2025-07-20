@@ -78,112 +78,7 @@ tables = [
             StructField("distance_km", FloatType(), False),
         ])
     },
-    {
-        "name": "bronze_route_weather_points_static",
-        "schema": StructType([
-            StructField("route_id", StringType(), False),
-            StructField("way_point_number", IntegerType(), False),
-            StructField("latitude", DoubleType(), False),
-            StructField("longitude", DoubleType(), False),
-            StructField("height", FloatType(), False),
-        ])
-    },
-    {
-        "name": "bronze_flights_streaming_source",
-        "schema": StructType([
-            StructField("flight_id", StringType(), False),
-            StructField("route_id", StringType(), False),
-            StructField("max_passenger_capacity", IntegerType(), False),
-            StructField("schedualed_arrival", TimestampType(), True),
-            StructField("schedualed_departure", TimestampType(), True),
-            StructField("max_lagguge_weight_capacity", FloatType(), True),
-        ])
-    },
-    {
-        "name": "bronze_booked_tickets_raw_streaming",
-        "schema": StructType([
-            StructField("booked_ticket_id", StringType(), False),
-            StructField("ticket_price", FloatType(), False),
-            StructField("passenger_passport_id", StringType(), False),
-            StructField("passenger_first_name", StringType(), False),
-            StructField("passenger_last_name", StringType(), False),
-            StructField("order_method", StringType(), False),
-            StructField("booking_date", DateType(), False),
-            StructField("ticket_class", StringType(), False),
-            StructField("luggage_class", StringType(), False),
-            StructField("passenger_nationality", StringType(), False),
-            StructField("passenger_email", StringType(), False),
-            StructField("passenger_date_of_birth", DateType(), False),
-        ])
-    },
-    {
-        "name": "bronze_registered_customeres_streaming",
-        "schema": StructType([
-            StructField("customer_passport_id", StringType(), False),
-            StructField("customer_first_name", StringType(), False),
-            StructField("customer_last_name", StringType(), False),
-            StructField("customer_date_of_birth", DateType(), False),
-            StructField("passenger_nationality", StringType(), False),
-            StructField("passenger_email", StringType(), False),
-            StructField("customer_membership_tier", StringType(), False),
-        ])
-    },
-    {
-        "name": "bronze_flight_weather_raw_api",
-        "schema": StructType([
-            StructField("weather_sample_id", StringType(), False),
-            StructField("temperature", DoubleType(), False),
-            StructField("humidity", DoubleType(), False),
-            StructField("wind_speed", DoubleType(), False),
-            StructField("wind_direction", StringType(), False),
-            StructField("current_weather_condition", StringType(), False),
-            StructField("sample_for_date", TimestampType(), False),
-        ])
-    },
-    {
-        "name": "bronze_ticket_prices",
-        "schema": StructType([
-            StructField("price_id", StringType(), False),
-            StructField("flight_id", StringType(), False),
-            StructField("class", StringType(), False),
-            StructField("price", FloatType(), False),
-            StructField("luggage_fee", FloatType(), False),
-            StructField("start_date", DateType(), False),
-            StructField("end_date", DateType(), False),
-            StructField("actual", BooleanType(), False),
-        ])
-    },
-    {
-        "name": "bronze_boarding_events_raw",
-        "schema": StructType([
-            StructField("event_id", StringType(), False),
-            StructField("flight_id", StringType(), False),
-            StructField("event_type", StringType(), False),
-            StructField("event_time", TimestampType(), False),
-            StructField("passenger_id", StringType(), True),
-            StructField("baggage_weight", DecimalType(10, 2), True),  # שני ספרות אחרי הנקודה
-            StructField("ingestion_time", TimestampType(), False),
-        ])
-    },
-    {
-        "name": "bronze_flight_events_raw",
-        "schema": StructType([
-            StructField("event_id", StringType(), False),
-            StructField("flight_id", StringType(), False),
-            StructField("event_type", StringType(), False),
-            StructField("delay_reason", StringType(), True),
-            StructField("event_time", TimestampType(), False),
-        ])
-    },
-    {
-        "name": "bronze_ticket_events_raw_streaming",
-        "schema": StructType([
-            StructField("event_id", StringType(), False),
-            StructField("booked_ticket_id", StringType(), False),
-            StructField("event_type", StringType(), False),
-            StructField("event_time", TimestampType(), False),
-        ])
-    }
+    # טבלאות נוספות...
 ]
 
 # ריצה ליצירת כל הטבלאות עם נתונים דמיוניים (10 שורות כל טבלה)
@@ -193,4 +88,4 @@ for table in tables:
     rows = generate_rows_for_table(schema, num_rows=10)  # הפחתתי את מספר השורות ל-10
     create_table(name, schema, rows)
 
-print("🎉  כל הטבלאות נוצרו והוגדרו בהצלחה עם נתונים דמויות!")
+print("🎉  כל הטבלאות נוצרו והוגדרו בהצלחה עם נתונים דמיוניים!")
