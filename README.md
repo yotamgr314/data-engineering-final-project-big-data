@@ -177,10 +177,3 @@ Tables cover all 3 layers: `bronze`, `silver`, `gold`.
   ```
 
 ---
-
-##  Contributors
-
-* **Yotam Greenstein** - Developer & Architect
-* Special thanks to the **Big Data Engineering Course Team**
-
----
