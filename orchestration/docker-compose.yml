@@ -31,7 +31,8 @@ services:
     volumes:
       - airflow_data:/opt/airflow
       - ./dags:/opt/airflow/dags
-      - ../processing/jobs:/opt/bitnami/spark/jobs # ← תיקיית הסקריפטים שלכם
+      - ../processing/jobs:/opt/bitnami/spark/jobs
+      - ../processing/jobs:/opt/airflow/jobs # ← תיקיית הסקריפטים שלכם
       - /var/run/docker.sock:/var/run/docker.sock # ← מיפוי ה‑docker daemon
     command: webserver
     ports:
@@ -51,6 +52,7 @@ services:
       - airflow_data:/opt/airflow
       - ./dags:/opt/airflow/dags
       - ../processing/jobs:/opt/bitnami/spark/jobs
+      - ../processing/jobs:/opt/airflow/jobs
       - /var/run/docker.sock:/var/run/docker.sock
     command: scheduler
     networks:
@@ -69,6 +71,7 @@ services:
       - airflow_data:/opt/airflow
       - ./dags:/opt/airflow/dags
       - ../processing/jobs:/opt/bitnami/spark/jobs
+      - ../processing/jobs:/opt/airflow/jobs
       - /var/run/docker.sock:/var/run/docker.sock
     command: >
       bash -c "rm -f /opt/airflow/airflow-worker.pid && exec airflow celery worker"
