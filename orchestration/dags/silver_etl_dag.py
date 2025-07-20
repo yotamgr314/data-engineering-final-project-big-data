@@ -24,7 +24,7 @@ with DAG(
         task_id="etl_silver_routes",
         image="your_docker_image_for_silver_etl",
         command="python /opt/bitnami/spark/jobs/silver_etl_routes.py",
-        volumes=["/opt/airflow/dags/jobs:/opt/bitnami/spark/jobs"],  # עדכון כאן
+        mounts=["/opt/airflow/dags/jobs:/opt/bitnami/spark/jobs"],
         network_mode="bridge",
         dag=dag
     )
@@ -36,7 +36,7 @@ with DAG(
         task_id="etl_silver_flights",
         image="your_docker_image_for_silver_etl",
         command="python /opt/bitnami/spark/jobs/silver_etl_flights.py",
-        volumes=["/path/to/local:/opt/bitnami/spark/jobs"],
+        mounts=["/path/to/local:/opt/bitnami/spark/jobs"],
         network_mode="bridge",
         dag=dag
     )
@@ -46,7 +46,7 @@ with DAG(
         task_id="etl_silver_ticket_prices",
         image="your_docker_image_for_silver_etl",
         command="python /opt/bitnami/spark/jobs/silver_etl_ticket_prices.py",
-        volumes=["/path/to/local:/opt/bitnami/spark/jobs"],
+        mounts=["/path/to/local:/opt/bitnami/spark/jobs"],
         network_mode="bridge",
         dag=dag
     )
@@ -56,7 +56,7 @@ with DAG(
         task_id="etl_silver_customers",
         image="your_docker_image_for_silver_etl",
         command="python /opt/bitnami/spark/jobs/silver_etl_customers.py",
-        volumes=["/path/to/local:/opt/bitnami/spark/jobs"],
+        mounts=["/path/to/local:/opt/bitnami/spark/jobs"],
         network_mode="bridge",
         dag=dag
     )
@@ -66,7 +66,7 @@ with DAG(
         task_id="etl_silver_flight_events",
         image="your_docker_image_for_silver_etl",
         command="python /opt/bitnami/spark/jobs/silver_etl_flight_events.py",
-        volumes=["/path/to/local:/opt/bitnami/spark/jobs"],
+        mounts=["/path/to/local:/opt/bitnami/spark/jobs"],
         network_mode="bridge",
         dag=dag
     )
@@ -76,7 +76,7 @@ with DAG(
         task_id="etl_silver_boarding_summary",
         image="your_docker_image_for_silver_etl",
         command="python /opt/bitnami/spark/jobs/silver_etl_boarding_summary.py",
-        volumes=["/path/to/local:/opt/bitnami/spark/jobs"],
+        mounts=["/path/to/local:/opt/bitnami/spark/jobs"],
         network_mode="bridge",
         dag=dag
     )
