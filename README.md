@@ -67,7 +67,7 @@ Services will be available at:
 *  **Spark UI**: [http://localhost:8080](http://localhost:8080)
 *  **Airflow**: [http://localhost:8083](http://localhost:8083)
 *  **MinIO**: [http://localhost:9001](http://localhost:9001)
-
+the airflow takes time to be avaliable, wait before you try to enter it
 ---
 
 ###  First-Time Setup (Airflow)

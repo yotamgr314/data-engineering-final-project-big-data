@@ -3,11 +3,11 @@ from airflow.providers.docker.operators.docker import DockerOperator
 from airflow.utils.dates import days_ago
 from airflow.utils.trigger_rule import TriggerRule
 from datetime import timedelta
+from docker.types import Mount 
+import os
 
-MOUNT = "/home/yotamgr314/data-engineering-final-project-big-data/processing/jobs:/opt/bitnami/spark/jobs"
-
-default_args = {"owner": "data-eng", "retries": 1,
-                "retry_delay": timedelta(minutes=3)}
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+HOST_JOBS_PATH = os.path.join(BASE_DIR, "processing", "jobs")
 
 with DAG(
     dag_id="seed_and_validate_bronze",
@@ -25,7 +25,7 @@ with DAG(
             "bash -c '[[ \"{{ dag_run.conf.get(\"seed\", false) }}\" == \"True\" ]] "
             "&& spark-submit --master spark://spark-master:7077 "
             "/opt/bitnami/spark/jobs/seed_bronze.py || echo Skip'"),
-        mounts=[MOUNT],
+        mounts=[Mount(source=HOST_JOBS_PATH, target="/opt/bitnami/spark/jobs", type="bind")],
         network_mode="bigdata-net",
     )
 
@@ -35,7 +35,7 @@ with DAG(
         auto_remove=True,
         command=("spark-submit --master spark://spark-master:7077 "
                  "/opt/bitnami/spark/jobs/validate_bronze.py"),
-        mounts=[MOUNT],
+        mounts=[Mount(source=HOST_JOBS_PATH, target="/opt/bitnami/spark/jobs", type="bind")],
         network_mode="bigdata-net",
         trigger_rule=TriggerRule.ALL_DONE,
     )
